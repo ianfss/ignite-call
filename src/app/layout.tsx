@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
+import { Toaster } from '@/components/ui/sonner'
 
 export const metadata: Metadata = {
   title: 'Ignite Call',
@@ -22,6 +23,7 @@ export default function RootLayout({
           enableSystem
         >
           {children}
+          <Toaster richColors />
         </ThemeProvider>
       </body>
     </html>
