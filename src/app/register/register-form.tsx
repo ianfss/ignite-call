@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -52,6 +52,8 @@ export function RegisterForm() {
 
   const params = useSearchParams()
 
+  const router = useRouter()
+
   useEffect(() => {
     const username = params.get('username')
 
@@ -72,7 +74,9 @@ export function RegisterForm() {
       }),
     })
 
-    if (!response.ok) {
+    if (response.ok) {
+      await router.push('/register/connect-calendar')
+    } else {
       const { message } = await response.json()
 
       toast.error(message)
