@@ -11,12 +11,7 @@ export async function POST(request: Request) {
   })
 
   if (userExists) {
-    return Response.json(
-      {
-        message: 'Username already exists.',
-      },
-      { status: 409 }
-    )
+    return Response.json(null, { status: 409 })
   }
 
   const user = await prisma.user.create({
@@ -33,5 +28,5 @@ export async function POST(request: Request) {
     path: '/',
   })
 
-  return Response.json(user, { status: 201 })
+  return Response.json(null, { status: 201 })
 }
