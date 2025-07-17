@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Multistep } from '@/components/ui/multistep'
 
-export default function Register() {
+export default function ConnectCalendar() {
   const session = useSession()
   const params = useSearchParams()
 
