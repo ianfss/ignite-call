@@ -76,11 +76,9 @@ export default function Register() {
     })
 
     if (response.ok) {
-      await router.push('/register/connect-calendar')
+      router.push('/register/connect-calendar')
     } else {
-      const { message } = await response.json()
-
-      toast.error(message)
+      toast.error('O nome de usuário já existe.')
     }
   }
 

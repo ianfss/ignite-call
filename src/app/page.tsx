@@ -40,10 +40,10 @@ export default function Home() {
 
   const router = useRouter()
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     const { username } = values
 
-    await router.push(`/register?username=${username}`)
+    router.push(`/register?username=${username}`)
   }
 
   return (

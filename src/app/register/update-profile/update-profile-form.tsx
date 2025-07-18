@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight, Upload, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import z from 'zod'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -42,7 +43,7 @@ export function UpdateProfileForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { bio } = values
 
-    await fetch('/api/users/profile', {
+    const response = await fetch('/api/users/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +51,11 @@ export function UpdateProfileForm({
       body: JSON.stringify({ bio }),
     })
 
-    router.push(`/schedule/${username}`)
+    if (response.ok) {
+      router.push(`/schedule/${username}`)
+    } else {
+      toast.error('Erro.')
+    }
   }
 
   return (

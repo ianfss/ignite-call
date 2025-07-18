@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useFieldArray, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -93,7 +94,7 @@ export default function TimeIntervals() {
     // biome-ignore lint/nursery/noShadow: <>
     const { intervals } = values as unknown as FormSchemaOut
 
-    await fetch('/api/users/time-intervals', {
+    const response = await fetch('/api/users/time-intervals', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +102,11 @@ export default function TimeIntervals() {
       body: JSON.stringify({ intervals }),
     })
 
-    router.push('/register/update-profile')
+    if (response.ok) {
+      router.push('/register/update-profile')
+    } else {
+      toast.error('Erro.')
+    }
   }
 
   return (
