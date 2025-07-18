@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowRight, Calendar, Check } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn, useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,6 +10,7 @@ import { Multistep } from '@/components/ui/multistep'
 export default function ConnectCalendar() {
   const session = useSession()
   const params = useSearchParams()
+  const router = useRouter()
 
   const hasAuthError = !!params.get('error')
 
@@ -17,6 +18,10 @@ export default function ConnectCalendar() {
 
   async function handleConnectCalendar() {
     await signIn('google')
+  }
+
+  async function handleNavigateToNextStep() {
+    await router.push('/register/time-intervals')
   }
 
   return (
@@ -48,7 +53,11 @@ export default function ConnectCalendar() {
             </p>
           )}
 
-          <Button disabled={!isSignedIn} type="submit">
+          <Button
+            disabled={!isSignedIn}
+            onClick={handleNavigateToNextStep}
+            type="submit"
+          >
             Próximo passo <ArrowRight />
           </Button>
         </CardContent>
