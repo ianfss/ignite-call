@@ -1,4 +1,4 @@
-import type { NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import z from 'zod'
 import { auth } from '@/lib/auth/auth-config'
 import { prisma } from '@/lib/prisma'
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
   const session = await auth()
 
   if (!session) {
-    return Response.json(null, { status: 401 })
+    return new NextResponse(null, { status: 401 })
   }
 
   const result = await request.json()
@@ -46,5 +46,5 @@ export async function POST(request: NextRequest) {
     })),
   })
 
-  return Response.json(null, { status: 201 })
+  return new NextResponse(null, { status: 201 })
 }

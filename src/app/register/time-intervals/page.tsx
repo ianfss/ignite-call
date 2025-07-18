@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useFieldArray, useForm } from 'react-hook-form'
 import z from 'zod'
 import { Button } from '@/components/ui/button'
@@ -62,6 +63,8 @@ type FormSchemaIn = z.input<typeof formSchema>
 type FormSchemaOut = z.output<typeof formSchema>
 
 export default function TimeIntervals() {
+  const router = useRouter()
+
   const form = useForm<FormSchemaIn, unknown, FormSchemaOut>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -98,21 +101,13 @@ export default function TimeIntervals() {
       body: JSON.stringify({ intervals }),
     })
 
-    // if (response.ok) {
-    //   // biome-ignore lint/suspicious/noConsole: <>
-    //   console.log('response', response)
-    //   // await router.push('/register/connect-calendar')
-    // } else {
-    //   const { message } = await response.json()
-
-    //   toast.error('errorrrrr:', message)
-    // }
+    router.push('/register/update-profile')
   }
 
   return (
     <div className="mx-auto mt-20 max-w-[572px] py-4">
       <div className="space-y-6 px-6 ">
-        <strong className="text-2xl">Quase lá</strong>
+        <strong className="text-2xl">Defina sua disponibilidade</strong>
         <p className="text-neutral-200">
           Defina o intervalo de horários que você está disponível em cada dia da
           semana.

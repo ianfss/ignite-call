@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
   })
 
   if (userExists) {
-    return Response.json(null, { status: 409 })
+    return new NextResponse(null, { status: 409 })
   }
 
   const user = await prisma.user.create({
@@ -28,5 +29,5 @@ export async function POST(request: Request) {
     path: '/',
   })
 
-  return Response.json(null, { status: 201 })
+  return new NextResponse(null, { status: 201 })
 }
