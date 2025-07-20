@@ -1,6 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { Calendar, Clock } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -17,6 +19,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
+interface ConfirmStepProps {
+  schedulingDate: Date
+  onCancelConfirmation: () => void
+}
+
 const whitespaceRegex = /\s+/
 
 const formSchema = z.object({
@@ -30,7 +37,10 @@ const formSchema = z.object({
   observations: z.string().optional(),
 })
 
-export function ConfirmStep() {
+export function ConfirmStep({
+  schedulingDate,
+  onCancelConfirmation,
+}: ConfirmStepProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,17 +54,25 @@ export function ConfirmStep() {
     console.log(values)
   }
 
+  const describedDate = format(schedulingDate, "dd 'de' MMMM 'de' yyyy", {
+    locale: ptBR,
+  })
+
+  const describedTime = format(schedulingDate, 'hh:mm', {
+    locale: ptBR,
+  })
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex gap-4 border-b pb-6 font-normal">
           <p className="flex items-center gap-2">
             <Calendar className="size-5 text-muted-foreground" />
-            22 de setembro de 2025
+            {describedDate}
           </p>
           <p className="flex items-center gap-2">
             <Clock className="size-5 text-muted-foreground" />
-            18:00
+            {describedTime}
           </p>
         </CardTitle>
       </CardHeader>
@@ -117,6 +135,7 @@ export function ConfirmStep() {
             <div className="flex justify-end">
               <Button
                 disabled={form.formState.isSubmitting}
+                onClick={onCancelConfirmation}
                 type="button"
                 variant="ghost"
               >
