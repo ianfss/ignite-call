@@ -4,7 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Calendar, Clock } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -41,6 +43,8 @@ export function ConfirmStep({
   schedulingDate,
   onCancelConfirmation,
 }: ConfirmStepProps) {
+  const params = useParams<{ username: string }>()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,9 +53,27 @@ export function ConfirmStep({
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // biome-ignore lint/suspicious/noConsole: <>
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const response = await fetch(`/api/users/${params.username}/schedule`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: values.name,
+        email: values.email,
+        observations: values.observations,
+        date: schedulingDate,
+      }),
+    })
+
+    if (response.ok) {
+      toast.success('Sucesso.')
+
+      onCancelConfirmation()
+    } else {
+      toast.error('Erro.')
+    }
   }
 
   const describedDate = format(schedulingDate, "dd 'de' MMMM 'de' yyyy", {
