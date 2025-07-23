@@ -1,13 +1,17 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { format, getMonth, getYear } from 'date-fns'
+import { format, getMonth, getYear, setHours, startOfHour } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent } from '@/components/ui/card'
+
+interface CalendarStepProps {
+  onSelectDateTime: (date: Date) => void
+}
 
 interface Availability {
   possibleTimes: number[]
@@ -19,7 +23,7 @@ interface BlockedDates {
   blockedDates: number[]
 }
 
-export function CalendarStep() {
+export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
   const params = useParams<{ username: string }>()
 
   const [currentDate, setCurrentDate] = useState(() => new Date())
@@ -68,6 +72,16 @@ export function CalendarStep() {
     },
   })
 
+  function handleSelectTime(hour: number) {
+    if (!date) {
+      return
+    }
+
+    const dateWithTime = startOfHour(setHours(date, hour))
+
+    onSelectDateTime(dateWithTime)
+  }
+
   return (
     <Card
       className={`relative mx-auto grid ${date ? 'grid-cols-[1fr_280px]' : 'w-[540px] grid-cols-1'}`}
@@ -109,6 +123,7 @@ export function CalendarStep() {
                   className=""
                   disabled={!availability.availableTimes.includes(hour)}
                   key={hour}
+                  onClick={() => handleSelectTime(hour)}
                   size="sm"
                   variant="secondary"
                 >

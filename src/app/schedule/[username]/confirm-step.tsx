@@ -1,8 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { Calendar, Clock } from 'lucide-react'
+import { useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,6 +21,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
+interface ConfirmStepProps {
+  schedulingDate: Date
+  onCancelConfirmation: () => void
+}
+
 const whitespaceRegex = /\s+/
 
 const formSchema = z.object({
@@ -30,7 +39,12 @@ const formSchema = z.object({
   observations: z.string().optional(),
 })
 
-export function ConfirmStep() {
+export function ConfirmStep({
+  schedulingDate,
+  onCancelConfirmation,
+}: ConfirmStepProps) {
+  const params = useParams<{ username: string }>()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,10 +53,36 @@ export function ConfirmStep() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // biome-ignore lint/suspicious/noConsole: <>
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const response = await fetch(`/api/users/${params.username}/schedule`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: values.name,
+        email: values.email,
+        observations: values.observations,
+        date: schedulingDate,
+      }),
+    })
+
+    if (response.ok) {
+      toast.success('Sucesso.')
+
+      onCancelConfirmation()
+    } else {
+      toast.error('Erro.')
+    }
   }
+
+  const describedDate = format(schedulingDate, "dd 'de' MMMM 'de' yyyy", {
+    locale: ptBR,
+  })
+
+  const describedTime = format(schedulingDate, 'hh:mm', {
+    locale: ptBR,
+  })
 
   return (
     <Card>
@@ -50,11 +90,11 @@ export function ConfirmStep() {
         <CardTitle className="flex gap-4 border-b pb-6 font-normal">
           <p className="flex items-center gap-2">
             <Calendar className="size-5 text-muted-foreground" />
-            22 de setembro de 2025
+            {describedDate}
           </p>
           <p className="flex items-center gap-2">
             <Clock className="size-5 text-muted-foreground" />
-            18:00
+            {describedTime}
           </p>
         </CardTitle>
       </CardHeader>
@@ -117,6 +157,7 @@ export function ConfirmStep() {
             <div className="flex justify-end">
               <Button
                 disabled={form.formState.isSubmitting}
+                onClick={onCancelConfirmation}
                 type="button"
                 variant="ghost"
               >
